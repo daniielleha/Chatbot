@@ -21,12 +21,11 @@ public class CustomAdapter extends BaseAdapter {
     private Context context;
     private LayoutInflater layoutInflater;
 
-    public CustomAdapter (List <ChatModel> list_chat_models, Context context){
+    public CustomAdapter(List <ChatModel> list_chat_models, Context context){
         this.list_chat_models = list_chat_models;
         this.context = context;
         layoutInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
-
 
     @Override
     public int getCount() {
@@ -46,15 +45,14 @@ public class CustomAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
-        if (view == null)
-        {
-            if (list_chat_models.get(position).isSend)
+        if (view == null) {
+            if (list_chat_models.get(position).isSend())
                 view = layoutInflater.inflate(R.layout.lis_item, null);
             else
                 view = layoutInflater.inflate(R.layout.list_item_rec, null);
 
-            BubbleTextView text_message = (BubbleTextView)view.findViewById(R.id.user_message);
-            text_message.setText(list_chat_models.get(position).message);
+            BubbleTextView txtMessage = (BubbleTextView) view.findViewById(R.id.user_message);
+            txtMessage.setText(list_chat_models.get(position).getMessage());
         }
         return view;
     }

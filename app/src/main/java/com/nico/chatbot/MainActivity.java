@@ -1,14 +1,13 @@
 package com.nico.chatbot;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.loader.content.AsyncTaskLoader;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -37,26 +36,32 @@ public class MainActivity extends AppCompatActivity {
         editText =(EditText) findViewById(R.id.user_message);
         btn_send = (FloatingActionButton) findViewById(R.id.fab);
 
-
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String text = editText.getText().toString();
                 ChatModel model = new ChatModel(text,true);
                 list_chat.add(model);
+
+//                String url = getResources().getString(R.string.simsimi_api) + "&lc=en&ft=1.0&text=" + text;
+
+//                ApiCall apiCall = new ApiCall();
+//                apiCall.start(getResources().getString(R.string.simsimi_api), text);
+
                 new simsimiAPI().execute(list_chat);
 
-                editText.setText("'");
+                editText.setText("");
             }
         });
     }
+
     private class simsimiAPI extends AsyncTask<List<ChatModel>,Void,String> {
         String stream = null;
         List<ChatModel> models;
         String text = editText.getText().toString();
 
         protected String doInBackground (List<ChatModel>... params){
-            String url = String.format("http://sandbox.api.simsimi.com/request.p?key=%s&lc=en&ft=1.0&text=&s",getString(R.string.simsimi_api),text);
+            String url = "http://sandbox.api.simsimi.com/request.p?key=" + getResources().getString(R.string.simsimi_api) + "&lc=en&ft=1.0&text=" + text +"/";
             models = params[0];
             HttpDataHandler httpDataHandler = new HttpDataHandler();
             stream = httpDataHandler.GetHTTPDATA(url);
@@ -65,12 +70,16 @@ public class MainActivity extends AppCompatActivity {
 
         protected void onPostExecute(String s){
             Gson gson = new Gson();
-            QueenModels response = gson.fromJson(s,QueenModels.class);
+            QueenModels response = gson.fromJson(s, QueenModels.class);
 
-            ChatModel chatModel = new ChatModel(response.getResponse(),false);
-            models.add(chatModel);
-            CustomAdapter adapter = new CustomAdapter(models,getApplicationContext());
-            listView.setAdapter(adapter);
+            if (response!=null){
+                ChatModel chatModel = new ChatModel(response.getResponse(),false);
+                models.add(chatModel);
+                CustomAdapter adapter = new CustomAdapter(models,getApplicationContext());
+                listView.setAdapter(adapter);
+            } else {
+                Log.i("ERROR", "Error en el servidor");
+            }
         }
     }
 }

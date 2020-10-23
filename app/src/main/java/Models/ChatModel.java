@@ -1,8 +1,8 @@
 package Models;
 
 public class ChatModel {
-    public String message;
-    public boolean isSend;
+    private String message;
+    private boolean isSend;
 
     public ChatModel(String message, boolean isSend){
         this.message = message;
